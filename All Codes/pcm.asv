@@ -1,0 +1,33 @@
+% Read the audio file
+[y, Fs] = audioread('audio.ogg');  % Replace 'your_audio.wav' with the actual audio file
+
+% Normalize audio signal to the range [-1, 1]
+y = y / max(abs(y));
+
+% PCM encoding
+encodedSignal = y(:);  % Convert 2D matrix to 1D vector
+
+% Repetition coding for error correction
+repetitionFactor = 2;
+encodedSignalRepeated = repelem(encodedSignal, repetitionFactor);
+
+% Simulate transmission channel with AWGN
+SNR_dB = 10;  % Signal-to-Noise Ratio in dB
+transmittedSignal = awgn(encodedSignalRepeated, SNR_dB, 'measured');
+
+% Simulate AWGN at the receiver
+receivedSignal = awgn(transmittedSignal, SNR_dB, 'measured');
+
+% Repetition decoding for error correction
+decodedSignalRepeated = reshape(receivedSignal, repetitionFactor, []);
+
+% Perform simple repetition decoding
+decodedSignal = mode(decodedSignalRepeated);
+
+% Reshape the decoded signal to the original audio size
+decodedAudio = reshape(decodedSignal, size(y));
+
+% Play the original and decoded audio signals for comparison
+% sound(y, Fs);
+pause(1);  % Pause for the original audio to play
+sound(decodedAudio, Fs);

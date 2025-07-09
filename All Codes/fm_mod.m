@@ -1,0 +1,26 @@
+
+img = imread('me.png');
+
+if size(img, 3) == 3
+    img = rgb2gray(img);
+end
+
+img = double(img) / 255;
+
+Fs = 1000; 
+Fc = 50;  
+dev = 20;   
+
+t = 0:1/Fs:(length(img)-1)/Fs;
+
+modulated_signal = fmmod(img, Fc, Fs, dev);
+
+snr = 90;
+noisy_signal = awgn(modulated_signal, snr, 'measured');
+
+demodulated_signal = fmdemod(noisy_signal, Fc, Fs, dev);
+
+figure;
+subplot(3,1,1); imshow(img); title('Original Image');
+subplot(3,1,2); plot(t, modulated_signal); title('Modulated Signal');
+subplot(3,1,3); imshow(demodulated_signal); title('Demodulated Image');

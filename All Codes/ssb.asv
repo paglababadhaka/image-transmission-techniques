@@ -1,0 +1,28 @@
+% SSB Image Transmission with Noise
+
+% Load image
+img = imread('me.png');
+img = rgb2gray(img); % Convert to grayscale if necessary
+img = double(img) / 255;
+% Sampling parameters
+fs = 10000; % Sampling frequency
+Ts = 1/fs; % Sampling period
+
+% Modulation parameters
+fc = 1000; % Carrier frequency
+
+% SSB Modulation
+modulated_signal = ssbmod(img, fc, fs);
+
+% Simulate channel noise
+SNR_dB = 20; % Signal-to-Noise Ratio in decibels
+noisy_signal = awgn(modulated_signal, SNR_dB, 'measured');
+
+% SSB Demodulation
+demodulated_signal = ssbdemod(noisy_signal, fc, fs);
+
+% Display original, modulated, and demodulated images
+figure;
+subplot(1,3,1); imshow(img); title('Original Image');
+subplot(1,3,2); plot(real(noisy_signal)); title('Noisy Modulated Signal');
+subplot(1,3,3); imshow(demodulated_signal); title('Demodulated Image');
